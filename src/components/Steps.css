@@ -1,0 +1,144 @@
+.steps {
+  padding: clamp(1rem, 1.25vw, 1.5rem);
+  background: #fdfdfa;
+}
+
+.step {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  aspect-ratio: 1882 / 1110;
+  border-radius: clamp(18px, 2.85vw, 3.42rem);
+}
+
+.step__media,
+.step__scrim {
+  position: absolute;
+  inset: 0;
+}
+
+.step__media {
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 72%;
+}
+
+.step__scrim {
+  z-index: 1;
+  background:
+    linear-gradient(
+      104deg,
+      rgb(7 13 19 / 0.5) 0%,
+      rgb(7 13 19 / 0.26) 38%,
+      rgb(7 13 19 / 0) 68%
+    ),
+    linear-gradient(180deg, rgb(7 13 19 / 0.3) 0%, rgb(7 13 19 / 0) 46%);
+  pointer-events: none;
+}
+
+.step__content {
+  position: relative;
+  z-index: 2;
+  padding: 7.85vw 2.6vw 0 4.6vw;
+  color: #fff;
+}
+
+.step__label {
+  margin: 0;
+  color: rgb(255 255 255 / 0.64);
+  font-size: clamp(1rem, 2vw, 2.4rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.step__title {
+  margin: 0.5vw 0 0;
+  font-size: clamp(1.7rem, 3.21vw, 3.85rem);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.step__body {
+  max-width: 39vw;
+  margin: 1.2vw 0 0;
+  color: rgb(255 255 255 / 0.94);
+  font-size: clamp(0.95rem, 1.72vw, 2.06rem);
+  font-weight: 300;
+  line-height: 1.43;
+}
+
+.step__divider {
+  display: block;
+  height: 1px;
+  margin-top: 2.9vw;
+  background: rgb(255 255 255 / 0.2);
+}
+
+.step__note {
+  position: absolute;
+  right: 4.95vw;
+  bottom: 4.95vw;
+  z-index: 3;
+  width: 28.1vw;
+  max-width: 34rem;
+  padding: 2.1vw 1.8vw 2.1vw;
+  background: rgb(14 18 22 / 0.76);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: clamp(14px, 1.4vw, 1.68rem);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.step__icon {
+  display: block;
+  width: auto;
+  height: clamp(1.4rem, 2.7vw, 3.24rem);
+  color: #fff;
+}
+
+.step__note p {
+  margin: 2.15vw 0 0;
+  color: rgb(255 255 255 / 0.96);
+  font-size: clamp(0.8rem, 1.42vw, 1.7rem);
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .steps {
+    padding: 14px;
+  }
+
+  .step {
+    aspect-ratio: auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 34rem;
+  }
+
+  .step__content {
+    padding: 2rem 1.5rem 0;
+  }
+
+  .step__body {
+    max-width: none;
+  }
+
+  .step__note {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: auto;
+    max-width: none;
+    margin: auto 1.5rem 1.5rem;
+    padding: 1.25rem;
+  }
+
+  .step__note p {
+    margin-top: 1rem;
+  }
+}

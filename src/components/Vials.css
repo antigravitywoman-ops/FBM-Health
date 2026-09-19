@@ -1,0 +1,179 @@
+.vials {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 1896 / 1422;
+  color: #fff;
+  background: #fdfdfa;
+}
+
+.vials__scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vials__crest {
+  position: absolute;
+  top: 3.13vw;
+  left: 34.2vw;
+  z-index: 1;
+  width: 10.7vw;
+  height: auto;
+  opacity: 0.55;
+}
+
+.vials__lead,
+.vials__sub {
+  position: absolute;
+  left: 5.18vw;
+  z-index: 2;
+  margin: 0;
+  font-size: clamp(1.5rem, 3.22vw, 3.86rem);
+  font-weight: 400;
+  line-height: 1.17;
+  letter-spacing: -0.03em;
+}
+
+.vials__lead {
+  top: 3.34vw;
+}
+
+.vials__sub {
+  bottom: 3.6vw;
+}
+
+.vials__list {
+  position: absolute;
+  bottom: 7.15vw;
+  left: 31.25vw;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4.25vw;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vials__item {
+  display: flex;
+  align-items: center;
+  gap: 1.24vw;
+}
+
+/* The rule is a pseudo-element because it overhangs the text on both sides. */
+.vials__label {
+  position: relative;
+  font-size: clamp(0.85rem, 2.05vw, 2.46rem);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+.vials__label::after {
+  content: "";
+  position: absolute;
+  top: 52%;
+  right: -0.49vw;
+  left: -0.49vw;
+  height: max(1px, 0.09vw);
+  background: rgb(255 255 255 / 0.92);
+}
+
+/* Contaminant spheres are drawn in CSS — no bitmap was supplied for them. */
+.vials__dot {
+  flex: 0 0 auto;
+  width: 2.64vw;
+  height: 2.64vw;
+  min-width: 16px;
+  min-height: 16px;
+  border-radius: 50%;
+  box-shadow:
+    inset -0.1vw -0.14vw 0.26vw rgb(0 0 0 / 0.3),
+    0 0.1vw 0.28vw rgb(0 0 0 / 0.28);
+}
+
+.vials__dot--metal {
+  background:
+    radial-gradient(circle at 44% 40%, rgb(56 50 46 / 0.92) 0%, rgb(60 54 50 / 0.55) 24%, rgb(60 54 50 / 0) 50%),
+    radial-gradient(circle at 30% 24%, #ece8e1 0%, #d2ccc4 32%, #a8a29a 66%, #6e6963 100%);
+}
+
+.vials__dot--toxin {
+  background:
+    radial-gradient(circle at 58% 26%, rgb(40 52 20 / 0.7) 0%, rgb(40 52 20 / 0) 8%),
+    radial-gradient(circle at 33% 40%, rgb(40 52 20 / 0.68) 0%, rgb(40 52 20 / 0) 7%),
+    radial-gradient(circle at 46% 55%, rgb(40 52 20 / 0.7) 0%, rgb(40 52 20 / 0) 9%),
+    radial-gradient(circle at 68% 52%, rgb(40 52 20 / 0.6) 0%, rgb(40 52 20 / 0) 7%),
+    radial-gradient(circle at 26% 62%, rgb(40 52 20 / 0.62) 0%, rgb(40 52 20 / 0) 7%),
+    radial-gradient(circle at 55% 74%, rgb(40 52 20 / 0.66) 0%, rgb(40 52 20 / 0) 8%),
+    radial-gradient(circle at 76% 34%, rgb(40 52 20 / 0.55) 0%, rgb(40 52 20 / 0) 6%),
+    radial-gradient(circle at 40% 18%, rgb(196 206 142 / 0.55) 0%, rgb(196 206 142 / 0) 9%),
+    radial-gradient(circle at 62% 64%, rgb(178 190 124 / 0.45) 0%, rgb(178 190 124 / 0) 8%),
+    radial-gradient(circle at 20% 44%, rgb(178 190 124 / 0.4) 0%, rgb(178 190 124 / 0) 7%),
+    radial-gradient(circle at 36% 30%, #b0bd76 0%, #87944a 38%, #5d6a30 74%, #39431f 100%);
+}
+
+.vials__dot--impurity {
+  background:
+    radial-gradient(circle at 36% 28%, #f4f2f7 0%, #dedae4 38%, #c0bcc9 72%, #9a96a4 100%);
+}
+
+@media (max-width: 900px) {
+  .vials {
+    aspect-ratio: auto;
+    padding: 2rem 1.25rem 2.5rem;
+  }
+
+  .vials__scene {
+    position: relative;
+    height: auto;
+    margin: 4.5rem 0 1.5rem;
+  }
+
+  .vials__crest {
+    top: 1.5rem;
+    left: auto;
+    right: 1.25rem;
+    width: 5rem;
+    opacity: 0.45;
+  }
+
+  .vials__lead,
+  .vials__sub,
+  .vials__list {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+  }
+
+  .vials__lead {
+    position: absolute;
+    top: 2rem;
+    left: 1.25rem;
+    font-size: 1.6rem;
+  }
+
+  .vials__sub {
+    font-size: 1.6rem;
+  }
+
+  .vials__list {
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    margin-top: 1.25rem;
+  }
+
+  .vials__dot {
+    width: 18px;
+    height: 18px;
+  }
+
+  .vials__label {
+    font-size: 0.95rem;
+  }
+}

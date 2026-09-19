@@ -1,0 +1,70 @@
+@font-face {
+  font-family: Aspekta;
+  src: url("/fonts/AspektaVF.woff2") format("woff2");
+  font-weight: 50 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --deep-teal: #011a24;
+  --pacific-teal: #0d717b;
+  --pure-white: #ffffff;
+  --coral-blush: #f7e1d9;
+  --ink: #f4f7f8;
+  --ink-soft: color-mix(in oklch, #f4f7f8 78%, #7aa0a8);
+  --void: var(--deep-teal);
+  --nav-ink: var(--deep-teal);
+  --nav-muted: color-mix(in srgb, var(--deep-teal) 72%, #ffffff);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --font: Aspekta, "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+html {
+  background: var(--void);
+}
+
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--void);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  width: 100%;
+}
+
+img {
+  max-width: 100%;
+}
+
+button,
+a {
+  font-family: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
