@@ -1,27 +1,90 @@
+/* The section is now a scroll track rather than a single card: the stage pins
+   for one viewport while the remaining height is the distance the reader
+   spends scrubbing the frame sequence. */
 .vials {
+  --vials-scrub: 180svh;
+
   position: relative;
   isolation: isolate;
-  aspect-ratio: 1896 / 1422;
+  overflow: clip;
+  min-height: calc(100svh + var(--vials-scrub));
   color: #fff;
-  background: #fdfdfa;
+  /* Matches the darkest teal in the artwork, so the corners the rounded
+     section clips and any sub-pixel seam read as part of the photograph
+     rather than as page background showing through. */
+  background: #06242b;
+  container-type: inline-size;
 }
 
-.vials__scene {
+.vials__stage {
+  position: sticky;
+  top: 0;
+  overflow: clip;
+  height: 100svh;
+}
+
+.vials__media {
   position: absolute;
   inset: 0;
   z-index: 0;
+}
+
+.vials__canvas,
+.vials__poster {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+.vials__canvas {
+  z-index: 0;
+}
+
+/* Frame one, held until the canvas has drawn for the first time, so the stage
+   is never an empty box while the sequence decodes. Under reduced motion it is
+   the only artwork the section ever loads and it stays put. */
+.vials__poster {
+  z-index: 1;
+  transition: opacity 240ms linear;
+  pointer-events: none;
+}
+
+.vials--painted .vials__poster {
+  opacity: 0;
+}
+
+/* The drawer interior that slides into view late in the sequence is almost
+   white, which the original still never was, so the copy needs its own floor
+   of contrast at the top and bottom edges rather than relying on the artwork. */
+.vials__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      rgb(2 22 27 / 0.5) 0%,
+      rgb(2 22 27 / 0.16) 16%,
+      rgb(2 22 27 / 0) 32%
+    ),
+    linear-gradient(
+      to top,
+      rgb(2 22 27 / 0.62) 0%,
+      rgb(2 22 27 / 0.26) 17%,
+      rgb(2 22 27 / 0) 36%
+    );
+}
+
 .vials__crest {
   position: absolute;
-  top: 3.13vw;
-  left: 34.2vw;
-  z-index: 1;
-  width: 10.7vw;
+  top: 3.13cqw;
+  left: 34.2cqw;
+  z-index: 3;
+  width: 10.7cqw;
   height: auto;
   opacity: 0.55;
 }
@@ -29,46 +92,100 @@
 .vials__lead,
 .vials__sub {
   position: absolute;
-  left: 5.18vw;
-  z-index: 2;
+  left: 5.18cqw;
+  z-index: 4;
   margin: 0;
-  font-size: clamp(1.5rem, 3.22vw, 3.86rem);
+  font-size: clamp(1.5rem, 3.22cqw, 3.86rem);
   font-weight: 400;
   line-height: 1.17;
   letter-spacing: -0.03em;
 }
 
 .vials__lead {
-  top: 3.34vw;
+  top: 3.34cqw;
+}
+
+/* One band so the heading and the contaminant row share the same exit clip.
+   Height covers the heading plus the row above it. Words ease on in place —
+   the band itself never fades or rises. */
+.vials__band {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 4;
+  height: 22cqw;
+  pointer-events: none;
+}
+
+.vials__line {
+  display: block;
+}
+
+.vials__word {
+  display: inline-block;
+  transform: none;
+}
+
+.vials__word + .vials__word {
+  margin-inline-start: 0.32em;
+}
+
+/* Per-word ease in place — the band never fades or rises. Opacity only,
+   150ms, so words still appear one-by-one without a hard 0/1 click. */
+.vials:not(.vials--still) .vials__word,
+.vials:not(.vials--still) .vials__item {
+  opacity: 0;
+  visibility: hidden;
+  clip-path: inset(0);
+  transition:
+    opacity 150ms ease-out,
+    visibility 0ms linear 150ms;
+  transform: none;
+}
+
+.vials:not(.vials--still) .vials__word--on {
+  opacity: 1;
+  visibility: visible;
+  clip-path: inset(0);
+  transition:
+    opacity 160ms ease-out,
+    visibility 0ms linear 0ms;
 }
 
 .vials__sub {
-  bottom: 3.6vw;
+  bottom: 3.6cqw;
 }
 
 .vials__list {
   position: absolute;
-  bottom: 7.15vw;
-  left: 31.25vw;
-  z-index: 2;
+  bottom: 7.15cqw;
+  left: 31.25cqw;
+  z-index: 4;
   display: flex;
   align-items: center;
-  gap: 4.25vw;
+  gap: 4.25cqw;
   margin: 0;
   padding: 0;
   list-style: none;
+  pointer-events: none;
+}
+
+.vials__band--gone {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .vials__item {
   display: flex;
   align-items: center;
-  gap: 1.24vw;
+  gap: 1.24cqw;
 }
 
 /* The rule is a pseudo-element because it overhangs the text on both sides. */
 .vials__label {
   position: relative;
-  font-size: clamp(0.85rem, 2.05vw, 2.46rem);
+  font-size: clamp(0.85rem, 2.05cqw, 2.46rem);
   font-weight: 300;
   letter-spacing: -0.01em;
 }
@@ -77,23 +194,23 @@
   content: "";
   position: absolute;
   top: 52%;
-  right: -0.49vw;
-  left: -0.49vw;
-  height: max(1px, 0.09vw);
+  right: -0.49cqw;
+  left: -0.49cqw;
+  height: max(1px, 0.09cqw);
   background: rgb(255 255 255 / 0.92);
 }
 
 /* Contaminant spheres are drawn in CSS — no bitmap was supplied for them. */
 .vials__dot {
   flex: 0 0 auto;
-  width: 2.64vw;
-  height: 2.64vw;
+  width: 2.64cqw;
+  height: 2.64cqw;
   min-width: 16px;
   min-height: 16px;
   border-radius: 50%;
   box-shadow:
-    inset -0.1vw -0.14vw 0.26vw rgb(0 0 0 / 0.3),
-    0 0.1vw 0.28vw rgb(0 0 0 / 0.28);
+    inset -0.1cqw -0.14cqw 0.26cqw rgb(0 0 0 / 0.3),
+    0 0.1cqw 0.28cqw rgb(0 0 0 / 0.28);
 }
 
 .vials__dot--metal {
@@ -122,33 +239,68 @@
     radial-gradient(circle at 36% 28%, #f4f2f7 0%, #dedae4 38%, #c0bcc9 72%, #9a96a4 100%);
 }
 
+/* No scrub to make room for, so the track collapses back to the single card the
+   section used to be. The global reduced-motion rule only shortens animations
+   and transitions, so these layout overrides need no `!important`. */
+@media (prefers-reduced-motion: reduce) {
+  .vials--still {
+    min-height: 0;
+    aspect-ratio: 1896 / 1422;
+  }
+
+  .vials--still .vials__stage {
+    position: static;
+    height: 100%;
+  }
+
+  .vials--still .vials__poster {
+    transition: none;
+    opacity: 1;
+  }
+
+  .vials--still .vials__word,
+  .vials--still .vials__item {
+    opacity: 1;
+    visibility: visible;
+    clip-path: inset(0);
+    transition: none;
+    transform: none;
+  }
+}
+
 @media (max-width: 900px) {
+  /* Pinning a viewport-tall stage on a phone leaves no room for the copy, so
+     the section reverts to the stacked list it used before and the artwork
+     scrubs as it crosses the screen instead. Keep this breakpoint in step with
+     COMPACT_QUERY in Vials.jsx. */
   .vials {
-    aspect-ratio: auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
     padding: 2rem 1.25rem 2.5rem;
   }
 
-  .vials__scene {
+  /* Dissolving the stage box promotes the artwork and the copy to flex items of
+     the section itself, which is what lets them reorder and what puts the
+     absolutely positioned heading back on the section's coordinates. */
+  .vials__stage {
+    display: contents;
+  }
+
+  .vials__media {
     position: relative;
-    height: auto;
+    inset: auto;
+    order: 1;
+    aspect-ratio: 1896 / 1422;
     margin: 4.5rem 0 1.5rem;
   }
 
   .vials__crest {
     top: 1.5rem;
-    left: auto;
     right: 1.25rem;
+    left: auto;
     width: 5rem;
     opacity: 0.45;
-  }
-
-  .vials__lead,
-  .vials__sub,
-  .vials__list {
-    position: relative;
-    top: auto;
-    bottom: auto;
-    left: auto;
   }
 
   .vials__lead {
@@ -156,6 +308,23 @@
     top: 2rem;
     left: 1.25rem;
     font-size: 1.6rem;
+  }
+
+  .vials__band {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    order: 2;
+    height: auto;
+  }
+
+  .vials__sub,
+  .vials__list {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
   }
 
   .vials__sub {
@@ -175,5 +344,15 @@
 
   .vials__label {
     font-size: 0.95rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vials--still {
+      aspect-ratio: auto;
+    }
+
+    .vials--still .vials__stage {
+      display: contents;
+    }
   }
 }

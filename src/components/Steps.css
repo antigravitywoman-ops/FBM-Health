@@ -1,14 +1,83 @@
 .steps {
-  padding: clamp(1rem, 1.25vw, 1.5rem);
-  background: #fdfdfa;
+  /* Where the first pinned card parks: clears the nav pill plus a small gap. */
+  --steps-top: clamp(80px, 6vw, 104px);
+  /* How far each card parks below the one before it, so the covered card's
+     rounded top edge stays visible as a stack. */
+  --steps-peek: clamp(10px, 1.15vw, 20px);
+  /* Room the whole stack of peeking edges needs. Subtracted from every card's
+     height so the last one still fits on screen with the others behind it. */
+  --steps-stack: calc(4 * var(--steps-peek));
+  /* In-flow room per card (visual card + hold). Hold is this minus card
+     height, so the next card does not arrive for a full beat. */
+  --steps-slot: 160svh;
+
+  /* The page gutter already insets this band, so the cards sit flush to it
+     instead of being indented twice. */
+  padding: 0;
+  background: var(--page-bg);
+}
+
+.steps__heading {
+  margin: clamp(2.5rem, 5vw, 6rem) 0 clamp(1.5rem, 2.6vw, 3rem);
+  color: var(--deep-teal);
+  font-size: clamp(1.7rem, 3.23vw, 3.88rem);
+  font-weight: 400;
+  line-height: 1.138;
+  letter-spacing: -0.028em;
+  text-align: center;
+}
+
+/* Containing block for every sticky card, which is what lets a pinned card
+   stay pinned while the four behind it are still on screen. Inline-size
+   containment adds no paint containment, so nothing clips the pinned cards,
+   and it gives the cards a `cqw` basis that ignores the page gutters. */
+.steps__stack {
+  container-type: inline-size;
 }
 
 .step {
-  position: relative;
+  /* `cqw` here is the stack width (ancestor container), not this card. */
+  --step-card-h: min(
+    calc(100cqw * 1110 / 1882),
+    calc(100svh - var(--steps-top) - var(--steps-stack))
+  );
+  position: sticky;
+  /* Each card parks one peek lower than the one before it, which is what
+     leaves the covered card's rounded top edge showing. `--step-index` is
+     1-based and set inline on the card. */
+  top: calc(var(--steps-top) + (var(--step-index) - 1) * var(--steps-peek));
+  /* Later cards paint over earlier ones as they ride up. */
+  z-index: var(--step-index);
+  /* Cards stay siblings of the stack so they share one sticky containing
+     block (a per-card wrapper would unstick each card as its slot ended).
+     The hold is in-flow margin, which is not a containing block. */
+  margin-top: calc(var(--steps-slot) - var(--step-card-h));
+  /* A second container, so the card's own contents scale to the card rather
+     than to the viewport. */
+  container-type: inline-size;
   isolation: isolate;
-  overflow: hidden;
-  aspect-ratio: 1882 / 1110;
-  border-radius: clamp(18px, 2.85vw, 3.42rem);
+  /* `clip` rather than `hidden`: it rounds the corners without turning the
+     card into a scroll container, which would strand the sticky positioning. */
+  overflow: clip;
+  /* Both axes are stated outright, so the card's geometry never depends on
+     whether its media child loaded. Height follows the artwork ratio until
+     that would push the pinned card off screen, at which point the photo
+     crops instead of the card narrowing. */
+  width: 100%;
+  height: var(--step-card-h);
+  border-radius: clamp(18px, 2.85cqw, 3.42rem);
+  /* Opaque base so the stacking edge reads cleanly over the card behind. */
+  background: var(--deep-teal);
+  /* No lift shadow — stacked cards read as a flat deck, not floating layers. */
+  box-shadow: none;
+  /* Copy left, note lower-right. Absolute note + short cards used to collide. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 30.2cqw);
+  grid-template-rows: 1fr auto;
+}
+
+.step:first-child {
+  margin-top: 0;
 }
 
 .step__media,
@@ -23,6 +92,32 @@
   height: 100%;
   object-fit: cover;
   object-position: center 72%;
+  transform: scale(1);
+  transform-origin: center center;
+  backface-visibility: hidden;
+}
+
+@media (hover: hover) {
+  .step__media {
+    transition: transform 480ms var(--ease-out);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .step:hover .step__media {
+    transform: scale(1.08);
+  }
+}
+
+/* Brand color wash over the photograph — pacific-teal multiply. */
+.step::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: rgb(13 113 123 / 0.3);
+  mix-blend-mode: multiply;
 }
 
 .step__scrim {
@@ -30,43 +125,46 @@
   background:
     linear-gradient(
       104deg,
-      rgb(7 13 19 / 0.5) 0%,
-      rgb(7 13 19 / 0.26) 38%,
-      rgb(7 13 19 / 0) 68%
+      rgb(1 26 36 / 0.56) 0%,
+      rgb(1 26 36 / 0.28) 36%,
+      rgb(13 113 123 / 0.1) 62%,
+      transparent 78%
     ),
-    linear-gradient(180deg, rgb(7 13 19 / 0.3) 0%, rgb(7 13 19 / 0) 46%);
+    linear-gradient(180deg, rgb(1 26 36 / 0.34) 0%, transparent 46%);
   pointer-events: none;
 }
 
 .step__content {
   position: relative;
   z-index: 2;
-  padding: 7.85vw 2.6vw 0 4.6vw;
+  grid-column: 1;
+  grid-row: 1 / -1;
+  padding: 7.85cqw 3cqw 0 4.6cqw;
   color: #fff;
 }
 
 .step__label {
   margin: 0;
   color: rgb(255 255 255 / 0.64);
-  font-size: clamp(1rem, 2vw, 2.4rem);
+  font-size: clamp(1rem, 2cqw, 2.4rem);
   font-weight: 300;
   line-height: 1.15;
   letter-spacing: -0.01em;
 }
 
 .step__title {
-  margin: 0.5vw 0 0;
-  font-size: clamp(1.7rem, 3.21vw, 3.85rem);
+  margin: 0.5cqw 0 0;
+  font-size: clamp(1.7rem, 3.21cqw, 3.85rem);
   font-weight: 400;
   line-height: 1.08;
   letter-spacing: -0.03em;
 }
 
 .step__body {
-  max-width: 39vw;
-  margin: 1.2vw 0 0;
+  max-width: 39cqw;
+  margin: 1.2cqw 0 0;
   color: rgb(255 255 255 / 0.94);
-  font-size: clamp(0.95rem, 1.72vw, 2.06rem);
+  font-size: clamp(0.95rem, 1.72cqw, 2.06rem);
   font-weight: 300;
   line-height: 1.43;
 }
@@ -74,53 +172,56 @@
 .step__divider {
   display: block;
   height: 1px;
-  margin-top: 2.9vw;
+  margin-top: 2.9cqw;
   background: rgb(255 255 255 / 0.2);
 }
 
+/* Lower-right grid cell. In-flow, so it cannot cover the left copy column. */
 .step__note {
-  position: absolute;
-  right: 4.95vw;
-  bottom: 4.95vw;
+  position: relative;
   z-index: 3;
-  width: 28.1vw;
-  max-width: 34rem;
-  padding: 2.1vw 1.8vw 2.1vw;
-  background: rgb(14 18 22 / 0.76);
+  grid-column: 2;
+  grid-row: 2;
+  width: auto;
+  max-width: none;
+  margin: 0 4.95cqw 4.95cqw 0;
+  padding: 1.7cqw 1.8cqw;
+  background: rgb(1 26 36 / 0.74);
   border: 1px solid rgb(255 255 255 / 0.08);
-  border-radius: clamp(14px, 1.4vw, 1.68rem);
+  border-radius: clamp(14px, 1.4cqw, 1.68rem);
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
 }
 
-.step__icon {
-  display: block;
-  width: auto;
-  height: clamp(1.4rem, 2.7vw, 3.24rem);
-  color: #fff;
-}
-
 .step__note p {
-  margin: 2.15vw 0 0;
+  margin: 0;
   color: rgb(255 255 255 / 0.96);
-  font-size: clamp(0.8rem, 1.42vw, 1.7rem);
+  font-size: clamp(0.8rem, 1.42cqw, 1.7rem);
   font-weight: 300;
   line-height: 1.5;
 }
 
 @media (max-width: 900px) {
-  .steps {
-    padding: 14px;
+  .steps__heading {
+    margin: 2rem 0 1.5rem;
   }
 
+  /* Pinning a tall card is unpleasant on phones, and the side-by-side copy and
+     floating note do not fit. Fall back to a plain scrolling list. */
   .step {
-    aspect-ratio: auto;
+    /* `relative` (not `static`) so the absolutely positioned photo still
+       uses the card as its containing block. Sticky is off, so no pin. */
+    position: relative;
+    z-index: auto;
+    height: auto;
     display: flex;
     flex-direction: column;
     min-height: 34rem;
+    margin-top: 14px;
   }
 
   .step__content {
+    max-width: none;
     padding: 2rem 1.5rem 0;
   }
 
@@ -139,6 +240,6 @@
   }
 
   .step__note p {
-    margin-top: 1rem;
+    margin: 0;
   }
 }

@@ -1,0 +1,299 @@
+/* The certificate is drawn in real DOM so the type stays crisp at any size and
+   on HiDPI. Every internal dimension is expressed in `em`, so the single
+   font-size on `.certificate` is the only knob that controls overall scale:
+   the reference document is 43.5em wide, i.e. 1em == cardWidth / 43.5. */
+
+.certificate {
+  --cert-ink: #011a24;
+  --cert-mid: #63767c;
+  --cert-muted: #7f8d92;
+  --cert-faint: #9aa5a9;
+  --cert-teal: #0d717b;
+  --cert-red: #ec3040;
+  --cert-rule: #e7e9ea;
+  --cert-band: #f7fafa;
+  --cert-foot: #fafcfc;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* Size knob: `.coa__doc` is the container. 34em wide → ~10.2px at 346px. */
+  font-size: calc(100cqw / 34);
+  font-family: var(--font);
+  font-weight: 400;
+  font-variant-ligatures: none;
+  line-height: 1.2;
+  color: var(--cert-ink);
+  text-align: left;
+  background: #fff;
+  border-radius: 1.15em;
+  overflow: clip;
+  box-shadow:
+    0 26px 60px rgb(0 10 12 / 0.45),
+    0 2px 10px rgb(0 10 12 / 0.28);
+  transform: perspective(70em) rotateX(var(--cert-rx, 0deg)) rotateY(var(--cert-ry, 0deg))
+    translate3d(0, 0, 0);
+  transform-origin: 50% 60%;
+  transition: transform 400ms var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+  backface-visibility: hidden;
+}
+
+/* Hover lift, tilt and deepened shadow. Transform-only so it stays on the
+   compositor; pointer-tracked angles come in as custom properties from JS. */
+@media (hover: hover) and (pointer: fine) {
+  .certificate {
+    will-change: transform;
+  }
+
+  .certificate:hover {
+    transform: perspective(70em) rotateX(var(--cert-rx, 0deg))
+      rotateY(var(--cert-ry, 0deg)) translate3d(0, -0.8em, 0);
+    transition-duration: 140ms;
+  }
+}
+
+/* index.css kills all motion globally with !important, so the override that
+   pins the card flat has to match that weight (see System.css). */
+@media (prefers-reduced-motion: reduce) {
+  .certificate,
+  .certificate:hover {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Narrow stacked layout: a tighter divisor keeps table/fine print near 10px. */
+@media (max-width: 900px) {
+  .certificate {
+    font-size: calc(100cqw / 33);
+  }
+}
+
+/* --- header band ------------------------------------------------------- */
+
+.cert__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.2em;
+  padding: 0.82em 1.45em 0.78em;
+  background: var(--cert-band);
+  border-bottom: 1px solid #e6eaea;
+}
+
+.cert__logo {
+  display: block;
+  width: 8.6em;
+  height: auto;
+}
+
+.cert__tagline {
+  margin: 0.42em 0 0;
+  color: var(--cert-faint);
+  font-size: 0.8em;
+  font-weight: 350;
+  letter-spacing: 0.195em;
+  text-transform: uppercase;
+}
+
+.cert__contact {
+  flex: none;
+  text-align: right;
+}
+
+.cert__address {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  color: var(--cert-muted);
+  font-size: 0.92em;
+  font-weight: 350;
+  line-height: 1.38;
+}
+
+.cert__address + .cert__address {
+  margin-top: 0.16em;
+}
+
+/* --- body -------------------------------------------------------------- */
+
+.cert__body {
+  flex: 1;
+  padding: 1.05em 1.45em 0.95em;
+}
+
+.cert__title {
+  margin: 0;
+  font-size: 0.98em;
+  font-weight: 400;
+  letter-spacing: 0.145em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.cert__fields {
+  display: grid;
+  /* Matches the reference: the second column starts a little past halfway,
+     and the whole grid is inset from the body padding. */
+  grid-template-columns: 53% 47%;
+  gap: 1.05em 0;
+  margin: 1.1em 0 0;
+  padding-left: 0.7em;
+}
+
+.cert__field dt {
+  color: var(--cert-faint);
+  font-size: 0.8em;
+  font-weight: 350;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.cert__field dd {
+  margin: 0.28em 0 0;
+  font-size: 1em;
+  font-weight: 350;
+}
+
+/* --- results table ----------------------------------------------------- */
+
+.cert__table {
+  width: 100%;
+  margin-top: 1.15em;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--cert-rule);
+  border-radius: 0.35em;
+  table-layout: fixed;
+}
+
+.cert__table th,
+.cert__table td {
+  padding: 0.5em 0.32em 0.5em 0.85em;
+  font-weight: 350;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.cert__table thead th {
+  /* Padding is em-relative, so the smaller header type needs its own value to
+     keep the header row the same height as the body rows. */
+  padding-block: 0.64em;
+  color: var(--cert-faint);
+  font-size: 0.8em;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: #f9fbfc;
+  border-bottom: 1px solid var(--cert-rule);
+}
+
+/* Widths are set on the header row; the body inherits them via table-layout. */
+.cert__table thead th:nth-child(1) {
+  width: 28.5%;
+}
+
+.cert__table thead th:nth-child(2) {
+  width: 21.7%;
+}
+
+.cert__table thead th:nth-child(3) {
+  width: 24%;
+}
+
+.cert__table thead th:nth-child(4) {
+  width: 25.8%;
+}
+
+.cert__table tbody th,
+.cert__table tbody td {
+  font-size: 1em;
+  border-top: 1px solid var(--cert-rule);
+}
+
+.cert__table tbody tr:first-child th,
+.cert__table tbody tr:first-child td {
+  border-top: 0;
+}
+
+.cert__table tbody th {
+  color: #12303a;
+}
+
+.cert__table tbody td {
+  color: var(--cert-mid);
+}
+
+.cert__table .cert__result {
+  color: var(--cert-teal);
+}
+
+/* --- fine print, signature -------------------------------------------- */
+
+.cert__fine {
+  margin: 0.78em 0 0;
+  color: var(--cert-muted);
+  font-size: 0.92em;
+  font-weight: 350;
+  line-height: 1.4;
+}
+
+.cert__sign {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1em;
+  margin-top: 1em;
+  padding-top: 0.95em;
+  border-top: 1px solid #edefef;
+}
+
+.cert__signature {
+  margin: 0;
+  color: #3d525a;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 1.12em;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.cert__role {
+  margin: 0.36em 0 0;
+  color: var(--cert-faint);
+  font-size: 0.85em;
+  font-weight: 350;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.cert__date {
+  margin: 0.38em 0 0;
+  color: #3d525a;
+  font-size: 0.92em;
+  font-weight: 350;
+}
+
+.cert__stamp {
+  flex: none;
+  margin: 0;
+  padding: 0.55em 0.9em 0.52em;
+  color: var(--cert-red);
+  font-size: 0.83em;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid var(--cert-red);
+  border-radius: 0.5em;
+}
+
+/* --- footer band ------------------------------------------------------- */
+
+.cert__footer {
+  padding: 0.62em 1.45em 0.72em;
+  color: var(--cert-muted);
+  font-size: 0.83em;
+  font-weight: 350;
+  text-align: center;
+  background: var(--cert-foot);
+  border-top: 1px solid #e8ecec;
+}

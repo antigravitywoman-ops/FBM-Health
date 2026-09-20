@@ -18,6 +18,9 @@
   --nav-muted: color-mix(in srgb, var(--deep-teal) 72%, #ffffff);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --font: Aspekta, "Segoe UI", sans-serif;
+  --page-bg: #fdfdfa;
+  --page-gutter: clamp(0.5rem, 1.15vw, 1.375rem);
+  --section-radius: clamp(0.875rem, 1.5vw, 1.75rem);
 }
 
 *,
@@ -34,13 +37,13 @@ body,
 }
 
 html {
-  background: var(--void);
+  background: var(--page-bg);
 }
 
 body {
   font-family: var(--font);
   color: var(--ink);
-  background: var(--void);
+  background: var(--page-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -48,6 +51,21 @@ body {
 
 #root {
   width: 100%;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-gutter);
+  padding: var(--page-gutter);
+}
+
+/* Every band is an inset card floating on the page. `clip` instead of `hidden`
+   so the sticky step cards keep sticking to the viewport rather than to the
+   section box. Footer is full-bleed and sits outside this card treatment. */
+main > section {
+  border-radius: var(--section-radius);
+  overflow: clip;
 }
 
 img {

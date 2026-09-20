@@ -46,7 +46,8 @@ export default function System() {
         <h2 className="system__title">
           A Complete System
           <br />
-          to Support <em>Researchers</em> and <em>Doctors</em>
+          to Support <span className="system__em">Researchers</span> and{' '}
+          <span className="system__em">Doctors</span>
         </h2>
 
         <p className="system__trust">
@@ -55,7 +56,9 @@ export default function System() {
               <img className="system__avatar" key={avatar.src} src={avatar.src} alt={avatar.alt} />
             ))}
           </span>
-          <span className="system__trust-text">Trusted in the field since 2016</span>
+          <span className="system__trust-text">
+            Trusted in the field since <span className="system__em">2016</span>
+          </span>
         </p>
       </div>
 

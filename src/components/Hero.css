@@ -2,8 +2,11 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  min-height: 100dvh;
+  /* Sized to the inset card, not the viewport, so the page gutter does not
+     push the fold below the screen. */
+  min-height: calc(100dvh - var(--page-gutter) * 2);
   color: var(--ink);
+  container-type: inline-size;
 }
 
 .hero__media,
@@ -23,9 +26,19 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 82% 40%;
+  object-position: 60% 40%;
   transform: none;
   filter: saturate(0.92) contrast(1.04);
+}
+
+.hero__media--loop {
+  z-index: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__media--loop {
+    display: none;
+  }
 }
 
 .hero__fade {
@@ -72,7 +85,7 @@
   z-index: 2;
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  min-height: calc(100dvh - var(--page-gutter) * 2);
   padding: 22px 22px 36px;
 }
 
@@ -229,7 +242,7 @@
 }
 
 .hero__copy {
-  max-width: min(46rem, 56vw);
+  max-width: min(46rem, 56cqw);
   margin-top: auto;
   margin-bottom: auto;
   padding-top: 28px;
@@ -238,7 +251,7 @@
 .hero__headline {
   margin: 0;
   color: #fff;
-  font-size: clamp(2.4rem, 4.6vw + 0.55rem, 6rem);
+  font-size: clamp(2.4rem, 4.6cqw + 0.55rem, 6rem);
   font-weight: 400;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -252,6 +265,27 @@
   .hero__line {
     white-space: nowrap;
   }
+}
+
+/* Every variant shares one grid cell so swapping copy never shifts the layout. */
+.hero__rotator {
+  display: grid;
+}
+
+.hero__variant {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(0.12em);
+  pointer-events: none;
+  transition:
+    opacity 620ms var(--ease-out),
+    transform 620ms var(--ease-out);
+}
+
+.hero__variant.is-active {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
 
 .hero__flag {
@@ -270,7 +304,7 @@
   max-width: 34rem;
   margin: 28px 0 0;
   color: #fff;
-  font-size: clamp(1.05rem, 0.7vw + 0.9rem, 1.5rem);
+  font-size: clamp(1.05rem, 0.7cqw + 0.9rem, 1.5rem);
   font-weight: 250;
   line-height: 1.4;
   letter-spacing: 0;
@@ -486,7 +520,7 @@
   }
 
   .hero__media {
-    object-position: 78% 28%;
+    object-position: 52% 34%;
   }
 }
 
@@ -526,6 +560,17 @@
 
   .hero__btn {
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__reveal {
+    animation: none;
+  }
+
+  .hero__variant {
+    transition: none;
+    transform: none;
   }
 }
 
