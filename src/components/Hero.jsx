@@ -7,7 +7,7 @@ const HERO_IMAGE = encodeURI(
 const HERO_POSTER = '/hero/hero-poster.jpg'
 const HERO_VIDEO = '/hero/hero-loop.mp4'
 const HERO_VIDEO_SMALL = '/hero/hero-loop-mobile.mp4'
-const FLAG_IMAGE = encodeURI('/hero/USA_Flag 1.png')
+const FLAG_IMAGE = encodeURI('/hero/USA_Flag 1.svg')
 const LOGO_MARK = encodeURI('/logos/Frontier logotype primary.svg')
 
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)'

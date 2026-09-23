@@ -2,7 +2,7 @@
    for one viewport while the remaining height is the distance the reader
    spends scrubbing the frame sequence. */
 .vials {
-  --vials-scrub: 180svh;
+  --vials-scrub: 80svh;
 
   position: relative;
   isolation: isolate;
@@ -29,31 +29,16 @@
   z-index: 0;
 }
 
-.vials__canvas,
 .vials__poster {
   position: absolute;
   inset: 0;
+  z-index: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.vials__canvas {
-  z-index: 0;
-}
-
-/* Frame one, held until the canvas has drawn for the first time, so the stage
-   is never an empty box while the sequence decodes. Under reduced motion it is
-   the only artwork the section ever loads and it stays put. */
-.vials__poster {
-  z-index: 1;
-  transition: opacity 240ms linear;
+  object-position: 62% 46%;
   pointer-events: none;
-}
-
-.vials--painted .vials__poster {
-  opacity: 0;
 }
 
 /* The drawer interior that slides into view late in the sequence is almost
@@ -200,43 +185,13 @@
   background: rgb(255 255 255 / 0.92);
 }
 
-/* Contaminant spheres are drawn in CSS — no bitmap was supplied for them. */
 .vials__dot {
   flex: 0 0 auto;
   width: 2.64cqw;
   height: 2.64cqw;
   min-width: 16px;
   min-height: 16px;
-  border-radius: 50%;
-  box-shadow:
-    inset -0.1cqw -0.14cqw 0.26cqw rgb(0 0 0 / 0.3),
-    0 0.1cqw 0.28cqw rgb(0 0 0 / 0.28);
-}
-
-.vials__dot--metal {
-  background:
-    radial-gradient(circle at 44% 40%, rgb(56 50 46 / 0.92) 0%, rgb(60 54 50 / 0.55) 24%, rgb(60 54 50 / 0) 50%),
-    radial-gradient(circle at 30% 24%, #ece8e1 0%, #d2ccc4 32%, #a8a29a 66%, #6e6963 100%);
-}
-
-.vials__dot--toxin {
-  background:
-    radial-gradient(circle at 58% 26%, rgb(40 52 20 / 0.7) 0%, rgb(40 52 20 / 0) 8%),
-    radial-gradient(circle at 33% 40%, rgb(40 52 20 / 0.68) 0%, rgb(40 52 20 / 0) 7%),
-    radial-gradient(circle at 46% 55%, rgb(40 52 20 / 0.7) 0%, rgb(40 52 20 / 0) 9%),
-    radial-gradient(circle at 68% 52%, rgb(40 52 20 / 0.6) 0%, rgb(40 52 20 / 0) 7%),
-    radial-gradient(circle at 26% 62%, rgb(40 52 20 / 0.62) 0%, rgb(40 52 20 / 0) 7%),
-    radial-gradient(circle at 55% 74%, rgb(40 52 20 / 0.66) 0%, rgb(40 52 20 / 0) 8%),
-    radial-gradient(circle at 76% 34%, rgb(40 52 20 / 0.55) 0%, rgb(40 52 20 / 0) 6%),
-    radial-gradient(circle at 40% 18%, rgb(196 206 142 / 0.55) 0%, rgb(196 206 142 / 0) 9%),
-    radial-gradient(circle at 62% 64%, rgb(178 190 124 / 0.45) 0%, rgb(178 190 124 / 0) 8%),
-    radial-gradient(circle at 20% 44%, rgb(178 190 124 / 0.4) 0%, rgb(178 190 124 / 0) 7%),
-    radial-gradient(circle at 36% 30%, #b0bd76 0%, #87944a 38%, #5d6a30 74%, #39431f 100%);
-}
-
-.vials__dot--impurity {
-  background:
-    radial-gradient(circle at 36% 28%, #f4f2f7 0%, #dedae4 38%, #c0bcc9 72%, #9a96a4 100%);
+  object-fit: contain;
 }
 
 /* No scrub to make room for, so the track collapses back to the single card the
@@ -254,7 +209,6 @@
   }
 
   .vials--still .vials__poster {
-    transition: none;
     opacity: 1;
   }
 
