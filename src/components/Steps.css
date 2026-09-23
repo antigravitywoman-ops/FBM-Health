@@ -1,9 +1,10 @@
 .steps {
   /* Where the first pinned card parks: clears the nav pill plus a small gap. */
   --steps-top: clamp(80px, 6vw, 104px);
-  /* How far each card parks below the one before it, so the covered card's
-     rounded top edge stays visible as a stack. */
-  --steps-peek: clamp(10px, 1.15vw, 20px);
+  /* How far each card parks below the one before it. Tall enough that the
+     covered card's STEP label stays readable in the peek strip (Function-
+     style stack), not just a thin rounded edge. */
+  --steps-peek: clamp(2.65rem, 4.2cqw, 3.5rem);
   /* Room the whole stack of peeking edges needs. Subtracted from every card's
      height so the last one still fits on screen with the others behind it. */
   --steps-stack: calc(4 * var(--steps-peek));
@@ -134,26 +135,49 @@
   pointer-events: none;
 }
 
+/* Absolute in the top peek strip so the index stays visible on every card
+   while later cards ride up over it — including collapsed/stacked ones. */
+.step__label {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--steps-peek);
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0 clamp(1.1rem, 2.6cqw, 2.4rem);
+  max-width: none;
+  color: rgb(255 255 255 / 0.78);
+  font-size: clamp(0.68rem, 1.15cqw, 0.95rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.step__label-sep {
+  letter-spacing: 0.08em;
+  opacity: 0.72;
+}
+
 .step__content {
   position: relative;
   z-index: 2;
   grid-column: 1;
   grid-row: 1 / -1;
-  padding: 7.85cqw 3cqw 0 4.6cqw;
+  /* Clear the peek-height STEP label strip above the title. */
+  padding: calc(var(--steps-peek) + clamp(0.7rem, 1.4cqw, 1.25rem)) 3cqw 0 4.6cqw;
   color: #fff;
 }
 
-.step__label {
-  margin: 0;
-  color: rgb(255 255 255 / 0.64);
-  font-size: clamp(1rem, 2cqw, 2.4rem);
-  font-weight: 300;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-}
-
 .step__title {
-  margin: 0.5cqw 0 0;
+  margin: 0;
   font-size: clamp(1.7rem, 3.21cqw, 3.85rem);
   font-weight: 400;
   line-height: 1.08;
@@ -220,9 +244,20 @@
     margin-top: 14px;
   }
 
+  .step__label {
+    /* Mobile is a plain list (no sticky peek), so give the label normal inset. */
+    position: absolute;
+    top: 1.15rem;
+    left: 1.5rem;
+    right: auto;
+    height: auto;
+    display: block;
+    padding: 0;
+  }
+
   .step__content {
     max-width: none;
-    padding: 2rem 1.5rem 0;
+    padding: 3.25rem 1.5rem 0;
   }
 
   .step__body {
