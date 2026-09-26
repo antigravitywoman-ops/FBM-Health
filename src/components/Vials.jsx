@@ -5,9 +5,9 @@ const CREST = encodeURI('/vials/USA Crest.png')
 const ART = '/vials/magnific_use-reference-image-1-img_IfreioWtvE.png'
 
 const CONTAMINANTS = [
-  { label: 'Heavy metals', src: '/vials/60cbc147d39a155e164cd7d41b00224768bd0d38.png' },
-  { label: 'Toxins', src: '/vials/37ca1c52f6ee269255143ec02775e0c61fbf0ec3.png' },
-  { label: 'Impurities', src: '/vials/1a94ee85e2f5be111a3fb2aded32ac7f12c9fd8f.png' },
+  { label: 'Heavy metals', src: '/vials/60cbc147d39a155e164cd7d41b00224768bd0d38.png', w: 2048, h: 2048 },
+  { label: 'Toxins', src: '/vials/37ca1c52f6ee269255143ec02775e0c61fbf0ec3.png', w: 1024, h: 1024 },
+  { label: 'Impurities', src: '/vials/1a94ee85e2f5be111a3fb2aded32ac7f12c9fd8f.png', w: 1024, h: 1024 },
 ]
 
 const LEAD_LINES = [
@@ -279,11 +279,26 @@ export default function Vials() {
             className="vials__poster"
             src={ART}
             alt="Open Frontier presentation box of 10mg research vials beside a single vial"
+            width={3312}
+            height={2480}
+            loading="lazy"
+            decoding="async"
+            fetchPriority="low"
           />
           <div className="vials__scrim" />
         </div>
 
-        <img className="vials__crest" src={CREST} alt="" aria-hidden="true" />
+        <img
+          className="vials__crest"
+          src={CREST}
+          alt=""
+          aria-hidden="true"
+          width={200}
+          height={212}
+          loading="lazy"
+          decoding="async"
+          fetchPriority="low"
+        />
 
         <h2 className="vials__lead">
           <WordLines lines={LEAD_LINES} />
@@ -301,7 +316,16 @@ export default function Vials() {
                 data-word={LEAD_WORD_COUNT + SUB_WORD_COUNT + i}
                 key={item.label}
               >
-                <img className="vials__dot" src={item.src} alt="" />
+                <img
+                  className="vials__dot"
+                  src={item.src}
+                  alt=""
+                  width={item.w}
+                  height={item.h}
+                  loading="lazy"
+                  decoding="async"
+                  fetchPriority="low"
+                />
                 <span className="vials__label">{item.label}</span>
               </li>
             ))}

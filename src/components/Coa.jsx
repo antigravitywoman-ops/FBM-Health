@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Certificate from './Certificate'
 import './Coa.css'
 
+const BACKGROUND = encodeURI('/COA/bg.png')
 const DOCTOR = encodeURI('/COA/Female doctor.png')
 const ICON_PETRI = encodeURI('/COA/magnific_create-a-minimal-ultrarea_w4zVBdw7EI 1.png')
 const ICON_DISH = encodeURI('/COA/magnific_create-a-minimal-premium-_w4zMMzs7EI 1.png')
@@ -12,26 +13,36 @@ const TESTS = [
     title: 'Peptide content',
     copy: 'Confirms the stated peptide mass per vial.',
     icon: ICON_MOLECULE,
+    iw: 175,
+    ih: 138,
   },
   {
     title: 'Residual solvents',
     copy: 'Verifies manufacturing solvents fall within specified limits.',
     icon: ICON_PETRI,
+    iw: 181,
+    ih: 138,
   },
   {
     title: 'Heavy metals',
     copy: 'Verifies manufacturing solvents fall within specified limits.',
     icon: ICON_DISH,
+    iw: 137,
+    ih: 137,
   },
   {
     title: 'Endotoxin',
     copy: 'Verifies manufacturing solvents fall within specified limits.',
     icon: ICON_DISH,
+    iw: 137,
+    ih: 137,
   },
   {
     title: 'Mass Spectrometry',
     copy: 'Verifies manufacturing solvents fall within specified limits.',
     icon: ICON_MOLECULE,
+    iw: 175,
+    ih: 138,
   },
 ]
 
@@ -112,7 +123,16 @@ function TestCard({ test, clone }) {
       aria-hidden={clone || undefined}
     >
       <h3>{test.title}</h3>
-      <img className="coa__card-icon" src={test.icon} alt="" />
+      <img
+        className="coa__card-icon"
+        src={test.icon}
+        alt=""
+        width={test.iw}
+        height={test.ih}
+        loading="lazy"
+        decoding="async"
+        fetchPriority="low"
+      />
       <p>{test.copy}</p>
     </li>
   )
@@ -225,6 +245,18 @@ export default function Coa() {
       id="testing"
       ref={sectionRef}
     >
+      <img
+        className="coa__bg"
+        src={BACKGROUND}
+        alt=""
+        aria-hidden="true"
+        width={1896}
+        height={980}
+        loading="lazy"
+        decoding="async"
+        fetchPriority="low"
+      />
+
       <div className="coa__intro">
         <h2 className="coa__headline" aria-label="Built for Scrutiny. A Robust Certificate of Analysis.">
           {HEADLINE_LINES.map((words, line) => (
@@ -260,6 +292,11 @@ export default function Coa() {
           className="coa__doctor"
           src={DOCTOR}
           alt="Clinician reviewing research peptide quality"
+          width={751}
+          height={686}
+          loading="lazy"
+          decoding="async"
+          fetchPriority="low"
         />
       </div>
     </section>

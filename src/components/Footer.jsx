@@ -50,10 +50,27 @@ export default function Footer() {
 
   return (
     <footer className="footer">
-      <img className="footer__banner" src={BANNER} alt="" aria-hidden="true" />
+      <img
+        className="footer__banner"
+        src={BANNER}
+        alt=""
+        aria-hidden="true"
+        width={1921}
+        height={1004}
+        loading="lazy"
+        decoding="async"
+        fetchPriority="low"
+      />
 
       <div className="footer__brand">
-        <img className="footer__logo" src={LOGO} alt="Frontier Biomed" />
+        <img
+          className="footer__logo"
+          src={LOGO}
+          alt="Frontier Biomed"
+          loading="lazy"
+          decoding="async"
+          fetchPriority="low"
+        />
 
         <p className="footer__tagline">
           One researcher and doctor platform for sourcing, telemedicine, and support.
@@ -87,7 +104,17 @@ export default function Footer() {
         onPointerMove={track}
         onPointerLeave={reset}
       >
-        <img className="footer__crest-img" src={CREST} alt="" aria-hidden="true" />
+        <img
+          className="footer__crest-img"
+          src={CREST}
+          alt=""
+          aria-hidden="true"
+          width={599}
+          height={599}
+          loading="lazy"
+          decoding="async"
+          fetchPriority="low"
+        />
       </div>
     </footer>
   )

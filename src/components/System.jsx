@@ -3,9 +3,9 @@ import './System.css'
 const BACKGROUND = encodeURI('/system/Section background.png')
 
 const AVATARS = [
-  { src: '/system/avatar-1.png', alt: 'Frontier researcher' },
-  { src: '/system/avatar-2.png', alt: 'Frontier clinician' },
-  { src: '/system/avatar-3.png', alt: 'Frontier lab scientist' },
+  { src: '/system/avatar-1.png', alt: 'Frontier researcher', w: 160, h: 160 },
+  { src: '/system/avatar-2.png', alt: 'Frontier clinician', w: 160, h: 160 },
+  { src: '/system/avatar-3.png', alt: 'Frontier lab scientist', w: 160, h: 160 },
 ]
 
 const CARDS = [
@@ -31,6 +31,9 @@ function Card({ card, duplicate }) {
         width={card.w}
         height={card.h}
         alt={duplicate ? '' : card.alt}
+        loading="lazy"
+        decoding="async"
+        fetchPriority="low"
       />
       <span className="system__pill">{card.label}</span>
     </li>
@@ -40,7 +43,17 @@ function Card({ card, duplicate }) {
 export default function System() {
   return (
     <section className="system" id="system">
-      <img className="system__bg" src={BACKGROUND} alt="" aria-hidden="true" />
+      <img
+        className="system__bg"
+        src={BACKGROUND}
+        alt=""
+        aria-hidden="true"
+        width={1894}
+        height={1104}
+        loading="lazy"
+        decoding="async"
+        fetchPriority="low"
+      />
 
       <div className="system__head">
         <h2 className="system__title">
@@ -53,7 +66,17 @@ export default function System() {
         <p className="system__trust">
           <span className="system__avatars">
             {AVATARS.map((avatar) => (
-              <img className="system__avatar" key={avatar.src} src={avatar.src} alt={avatar.alt} />
+              <img
+                className="system__avatar"
+                key={avatar.src}
+                src={avatar.src}
+                alt={avatar.alt}
+                width={avatar.w}
+                height={avatar.h}
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+              />
             ))}
           </span>
           <span className="system__trust-text">

@@ -26,19 +26,10 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 60% 40%;
-  transform: none;
+  /* X is inverted from 60% so the flipped shot still frames the vial on the right. */
+  object-position: 40% 40%;
+  transform: scaleX(-1);
   filter: saturate(0.92) contrast(1.04);
-}
-
-.hero__media--loop {
-  z-index: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero__media--loop {
-    display: none;
-  }
 }
 
 .hero__fade {
@@ -267,24 +258,51 @@
   }
 }
 
-/* Every variant shares one grid cell so swapping copy never shifts the layout. */
+/* Two-line variants share one cell. Hybrid: a shallow calendar hinge plus an
+   overlapping fade so the change reads elegant, not a full-page tear. */
 .hero__rotator {
   display: grid;
+  perspective: 40rem;
+  perspective-origin: 50% 0;
+  transform-style: preserve-3d;
 }
 
 .hero__variant {
   grid-area: 1 / 1;
+  transform: rotateX(-32deg);
+  transform-origin: top center;
   opacity: 0;
-  transform: translateY(0.12em);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   pointer-events: none;
-  transition:
-    opacity 620ms var(--ease-out),
-    transform 620ms var(--ease-out);
 }
 
-.hero__variant.is-active {
+.hero__variant:not(.is-active):not(.is-leaving) {
+  visibility: hidden;
+}
+
+.hero__rotator.is-armed .hero__variant.is-active {
+  transform: rotateX(0deg);
   opacity: 1;
-  transform: none;
+  pointer-events: auto;
+  transition:
+    transform 920ms 80ms var(--ease-out),
+    opacity 920ms 80ms var(--ease-out);
+}
+
+.hero__rotator.is-armed .hero__variant.is-leaving {
+  z-index: 1;
+  transform: rotateX(36deg);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 880ms var(--ease-out),
+    opacity 880ms var(--ease-out);
+}
+
+.hero__rotator:not(.is-armed) .hero__variant.is-active {
+  transform: rotateX(0deg);
+  opacity: 1;
   pointer-events: auto;
 }
 
@@ -520,7 +538,7 @@
   }
 
   .hero__media {
-    object-position: 52% 34%;
+    object-position: 48% 34%;
   }
 }
 
@@ -568,9 +586,29 @@
     animation: none;
   }
 
-  .hero__variant {
-    transition: none;
+  .hero__rotator {
+    perspective: none;
+  }
+
+  .hero__variant,
+  .hero__rotator.is-armed .hero__variant.is-active,
+  .hero__rotator.is-armed .hero__variant.is-leaving,
+  .hero__rotator:not(.is-armed) .hero__variant.is-active {
     transform: none;
+    transition: none;
+  }
+
+  .hero__variant {
+    opacity: 0;
+  }
+
+  .hero__rotator.is-armed .hero__variant.is-active,
+  .hero__rotator:not(.is-armed) .hero__variant.is-active {
+    opacity: 1;
+  }
+
+  .hero__rotator.is-armed .hero__variant.is-leaving {
+    opacity: 0;
   }
 }
 

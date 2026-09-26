@@ -8,12 +8,16 @@
   container-type: inline-size;
 }
 
-.coa::before {
-  content: "";
+.coa__bg {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: url("/COA/bg.png") center / cover no-repeat;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
   filter: saturate(0.88) brightness(1.08);
 }
 

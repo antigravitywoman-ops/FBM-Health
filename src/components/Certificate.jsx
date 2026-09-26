@@ -54,7 +54,7 @@ export default function Certificate() {
     <div className="certificate" ref={cardRef} onPointerMove={track} onPointerLeave={reset}>
       <header className="cert__header">
         <div className="cert__brand">
-          <img className="cert__logo" src={LOGO} alt="Frontier Biomed" />
+          <img className="cert__logo" src={LOGO} alt="Frontier Biomed" loading="lazy" decoding="async" />
           <p className="cert__tagline">Analytical data for this shipment</p>
         </div>
 

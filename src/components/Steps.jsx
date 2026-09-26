@@ -8,6 +8,8 @@ const STEPS = [
     title: 'Sourcing & Raw Material Testing',
     body: 'APIs are sourced from US FDA-certified facilities and tested in our USA facilities for toxins, heavy metals, and raw material purity.',
     media: encodeURI('/steps/WhatsApp Image 2026-09-24 at 1.06.39 AM.jpeg'),
+    w: 1600,
+    h: 1198,
     note: 'Every incoming lot is screened before it enters production: identity, purity, and contaminant checks so only qualified material moves forward.',
   },
   {
@@ -15,6 +17,8 @@ const STEPS = [
     title: 'Preparation & Sterilization',
     body: 'Raw materials are sterilized and prepared into compounds for the lyophilization process.',
     media: encodeURI('/steps/WhatsApp Image 2026-09-24 at 1.06.40 AM.jpeg'),
+    w: 1600,
+    h: 1194,
     note: 'Controlled prep and sterilization get each compound ready for freeze-drying, with clean handling from weigh-out through transfer into the lyo cycle.',
   },
   {
@@ -22,6 +26,8 @@ const STEPS = [
     title: 'Manufacturing & Freeze-Drying',
     body: 'Finished compounds are manufactured in our South Carolina, USA facility, freeze-dried, and sent to our seal crimp division.',
     media: encodeURI('/steps/WhatsApp Image 2026-09-24 at 1.06.40 AM (1).jpeg'),
+    w: 1600,
+    h: 1194,
     note: 'Lyophilized in South Carolina, then moved to seal and crimp so each vial is closed under the same domestic process chain. No offshore handoff mid-batch.',
   },
   {
@@ -29,6 +35,8 @@ const STEPS = [
     title: 'Quality & Safety Testing',
     body: 'Each batch undergoes a 14-day testing process for endotoxins, mold, bacteria, and metals.',
     media: encodeURI('/steps/WhatsApp Image 2026-09-24 at 1.06.40 AM (2).jpeg'),
+    w: 1600,
+    h: 1198,
     note: 'Batches are held through a full 14-day safety panel. Nothing releases until endotoxin, mold, bacteria, and metals results clear the bar.',
   },
   {
@@ -36,6 +44,8 @@ const STEPS = [
     title: 'Secure Shipping',
     body: 'Once testing is complete, products are securely packaged and shipped to you via standard or overnight delivery.',
     media: encodeURI('/steps/WhatsApp Image 2026-09-24 at 1.06.40 AM (3).jpeg'),
+    w: 1600,
+    h: 1194,
     note: 'After release, orders are packed for transit and shipped standard or overnight: sealed, labeled, and tracked from our facility to your door.',
   },
 ]
@@ -61,7 +71,11 @@ export default function Steps() {
                 className="step__media"
                 src={step.media}
                 alt=""
+                width={step.w}
+                height={step.h}
+                loading="lazy"
                 decoding="async"
+                fetchPriority="low"
               />
               <div className="step__scrim" />
 

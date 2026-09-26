@@ -54,229 +54,68 @@ function ArrowIcon() {
 export default function Hero() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [headline, setHeadline] = useState(0)
+  const [leaving, setLeaving] = useState(-1)
+  const [flipArmed, setFlipArmed] = useState(false)
+  const headlineRef = useRef(0)
   const videoRef = useRef(null)
-  const canvasRef = useRef(null)
 
   useEffect(() => {
-    if (window.matchMedia(REDUCED_MOTION).matches) return undefined
+    const reduce = window.matchMedia(REDUCED_MOTION)
+    const arm = requestAnimationFrame(() => setFlipArmed(true))
 
     const timer = setInterval(() => {
-      setHeadline((index) => (index + 1) % HEADLINES.length)
+      const current = headlineRef.current
+      const next = (current + 1) % HEADLINES.length
+      headlineRef.current = next
+      setLeaving(reduce.matches ? -1 : current)
+      setHeadline(next)
     }, HEADLINE_INTERVAL)
 
-    return () => clearInterval(timer)
+    return () => {
+      cancelAnimationFrame(arm)
+      clearInterval(timer)
+    }
   }, [])
 
-  // With reduced motion the clip holds on its last frame instead of playing.
+  const onHeadlineFlipEnd = (event) => {
+    if (event.propertyName !== 'opacity') return
+    if (!event.currentTarget.classList.contains('is-leaving')) return
+    setLeaving(-1)
+  }
+
+  // Play once (no loop, no reverse). Reduced motion skips playback and holds
+  // a still frame. After `ended`, stay on the last frame — never restart.
   useEffect(() => {
     const video = videoRef.current
-    if (!video || !window.matchMedia(REDUCED_MOTION).matches) return undefined
+    if (!video) return undefined
 
-    video.autoplay = false
-    video.pause()
+    video.loop = false
 
     const holdLastFrame = () => {
+      if (!Number.isFinite(video.duration) || video.duration <= 0) return
+      video.pause()
       video.currentTime = Math.max(0, video.duration - 0.05)
     }
 
-    if (video.readyState >= 1) {
-      holdLastFrame()
-      return undefined
-    }
-
-    video.addEventListener('loadedmetadata', holdLastFrame, { once: true })
-    return () => video.removeEventListener('loadedmetadata', holdLastFrame)
-  }, [])
-
-  // Native loop cuts to frame 0. HTML video also cannot play in reverse, and
-  // this clip has a single keyframe at t=0 — so scrubbing currentTime backward
-  // stalls at the end (the decoder must rebuild the whole GOP). Capture each
-  // decoded frame on the first pass, then ping-pong those bitmaps on a canvas.
-  useEffect(() => {
-    const video = videoRef.current
-    const canvas = canvasRef.current
-    if (!video || !canvas || window.matchMedia(REDUCED_MOTION).matches) {
-      return undefined
-    }
-
-    const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true })
-    if (!ctx) return undefined
-
-    const frames = []
-    let disposed = false
-    let capturing = true
-    let direction = 1
-    let index = 0
-    let acc = 0
-    let lastTs = 0
-    let lastMediaTime = -1
-    let rafId = 0
-    let rvfcId = 0
-    let fps = 24
-
-    const setPlayhead = (seconds) => {
-      const t = Math.max(0, seconds)
-      canvas.dataset.heroPlayhead = t.toFixed(4)
-      video.dataset.heroPlayhead = t.toFixed(4)
-    }
-
-    const paint = (source) => {
-      ctx.drawImage(source, 0, 0, canvas.width, canvas.height)
-    }
-
-    const snapshot = () => {
-      if (typeof OffscreenCanvas === 'function') {
-        const off = new OffscreenCanvas(canvas.width, canvas.height)
-        const offCtx = off.getContext('2d', { alpha: false })
-        if (!offCtx) return
-        offCtx.drawImage(video, 0, 0, canvas.width, canvas.height)
-        frames.push(off.transferToImageBitmap())
-        return
-      }
-
-      const off = document.createElement('canvas')
-      off.width = canvas.width
-      off.height = canvas.height
-      const offCtx = off.getContext('2d', { alpha: false })
-      if (!offCtx) return
-      offCtx.drawImage(video, 0, 0, canvas.width, canvas.height)
-      frames.push(off)
-    }
-
-    const sizeCanvas = () => {
-      const vw = video.videoWidth
-      const vh = video.videoHeight
-      if (!vw || !vh) return
-      const maxLong = window.matchMedia('(max-width: 760px)').matches ? 800 : 1024
-      const scale = Math.min(1, maxLong / Math.max(vw, vh))
-      canvas.width = Math.max(2, Math.round(vw * scale))
-      canvas.height = Math.max(2, Math.round(vh * scale))
-    }
-
-    const syncFps = () => {
-      const duration = video.duration
-      if (frames.length > 1 && Number.isFinite(duration) && duration > 0) {
-        fps = (frames.length - 1) / duration
-      }
-    }
-
-    const tick = (ts) => {
-      rafId = requestAnimationFrame(tick)
-      if (capturing || frames.length === 0) return
-
-      const dt = lastTs ? Math.min((ts - lastTs) / 1000, 0.05) : 0
-      lastTs = ts
-      acc += dt * fps
-
-      while (acc >= 1) {
-        acc -= 1
-        const next = index + direction
-        if (next >= frames.length) {
-          direction = -1
-          index = Math.max(0, frames.length - 2)
-        } else if (next < 0) {
-          direction = 1
-          index = Math.min(1, frames.length - 1)
-        } else {
-          index = next
-        }
-      }
-
-      paint(frames[index])
-      setPlayhead(index / fps)
-    }
-
-    const beginPingPong = () => {
-      if (!capturing) return
-      capturing = false
+    if (window.matchMedia(REDUCED_MOTION).matches) {
+      video.autoplay = false
       video.pause()
-      syncFps()
-      direction = -1
-      index = Math.max(0, frames.length - 1)
-      acc = 0
-      lastTs = performance.now()
-      if (frames[index]) paint(frames[index])
-      setPlayhead(index / fps)
-      if (!rafId) rafId = requestAnimationFrame(tick)
-    }
 
-    const onDecodedFrame = () => {
-      if (disposed || !capturing) return
-
-      const duration = video.duration
-      const mediaTime = video.currentTime
-      const frameT = 1 / Math.max(fps, 1)
-      const isNewFrame = mediaTime - lastMediaTime >= frameT * 0.35
-
-      if (isNewFrame || lastMediaTime < 0) {
-        lastMediaTime = mediaTime
-        if (!canvas.width) sizeCanvas()
-        paint(video)
-        snapshot()
-        setPlayhead(mediaTime)
+      if (video.readyState >= 1) {
+        holdLastFrame()
+        return undefined
       }
 
-      if (video.ended || (Number.isFinite(duration) && mediaTime >= duration - frameT)) {
-        beginPingPong()
-        return
-      }
-
-      if (typeof video.requestVideoFrameCallback === 'function') {
-        rvfcId = video.requestVideoFrameCallback(onDecodedFrame)
-      }
-    }
-
-    const captureTick = (ts) => {
-      rafId = requestAnimationFrame(captureTick)
-      if (!capturing) {
-        cancelAnimationFrame(rafId)
-        rafId = 0
-        lastTs = ts
-        rafId = requestAnimationFrame(tick)
-        return
-      }
-      onDecodedFrame()
+      video.addEventListener('loadedmetadata', holdLastFrame, { once: true })
+      return () => video.removeEventListener('loadedmetadata', holdLastFrame)
     }
 
     const onEnded = () => {
-      beginPingPong()
-    }
-
-    const start = () => {
-      sizeCanvas()
-      capturing = true
-      direction = 1
-      lastTs = 0
-      lastMediaTime = -1
-      video.loop = false
-      if (video.currentTime > 0.02) video.currentTime = 0
-      void video.play()
-
-      if (typeof video.requestVideoFrameCallback === 'function') {
-        rvfcId = video.requestVideoFrameCallback(onDecodedFrame)
-      } else if (!rafId) {
-        rafId = requestAnimationFrame(captureTick)
-      }
+      holdLastFrame()
     }
 
     video.addEventListener('ended', onEnded)
-    if (video.readyState >= 1) start()
-    else video.addEventListener('loadedmetadata', start)
-
-    return () => {
-      disposed = true
-      capturing = false
-      cancelAnimationFrame(rafId)
-      if (typeof video.cancelVideoFrameCallback === 'function' && rvfcId) {
-        video.cancelVideoFrameCallback(rvfcId)
-      }
-      video.removeEventListener('ended', onEnded)
-      video.removeEventListener('loadedmetadata', start)
-      for (const frame of frames) {
-        if (typeof frame.close === 'function') frame.close()
-      }
-      frames.length = 0
-    }
+    return () => video.removeEventListener('ended', onEnded)
   }, [])
 
   return (
@@ -289,10 +128,10 @@ export default function Hero() {
         muted
         playsInline
         preload="auto"
+        fetchPriority="high"
         disablePictureInPicture
         aria-hidden="true"
         tabIndex={-1}
-        data-hero-playhead="0"
       >
         <source media="(max-width: 760px)" src={HERO_VIDEO_SMALL} type="video/mp4" />
         <source src={HERO_VIDEO} type="video/mp4" />
@@ -302,12 +141,6 @@ export default function Hero() {
           alt="Scientist holding a Frontier research vial"
         />
       </video>
-      <canvas
-        className="hero__media hero__media--loop"
-        ref={canvasRef}
-        aria-hidden="true"
-        data-hero-playhead="0"
-      />
       <div className="hero__veil" />
       <div className="hero__fade hero__fade--top" />
       <div className="hero__fade hero__fade--bottom" />
@@ -325,7 +158,7 @@ export default function Hero() {
           </ul>
 
           <a className="hero__brand" href="#top" aria-label="Frontier home">
-            <img src={LOGO_MARK} alt="Frontier" />
+            <img src={LOGO_MARK} alt="Frontier" fetchPriority="high" decoding="async" />
           </a>
 
           <div className="hero__nav-end">
@@ -356,17 +189,22 @@ export default function Hero() {
                 <img className="hero__flag" src={FLAG_IMAGE} alt="" />
                 Manufactured
               </span>
-              <span className="hero__rotator">
-                {HEADLINES.map(([lead, tail], index) => (
-                  <span
-                    className={`hero__variant${index === headline ? ' is-active' : ''}`}
-                    key={lead + tail}
-                    aria-hidden={index === headline ? undefined : 'true'}
-                  >
-                    <span className="hero__line">{lead}</span>
-                    <span className="hero__line">{tail}</span>
-                  </span>
-                ))}
+              <span className={`hero__rotator${flipArmed ? ' is-armed' : ''}`}>
+                {HEADLINES.map(([lead, tail], index) => {
+                  const active = index === headline
+                  const exiting = index === leaving
+                  return (
+                    <span
+                      className={`hero__variant${active ? ' is-active' : ''}${exiting ? ' is-leaving' : ''}`}
+                      key={lead + tail}
+                      aria-hidden={active ? undefined : 'true'}
+                      onTransitionEnd={onHeadlineFlipEnd}
+                    >
+                      <span className="hero__line">{lead}</span>
+                      <span className="hero__line">{tail}</span>
+                    </span>
+                  )
+                })}
               </span>
             </h1>
 
